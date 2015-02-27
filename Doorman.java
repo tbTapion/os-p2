@@ -34,8 +34,7 @@ public class Doorman extends Thread{
 	}
 
 	// Add more methods as needed
-	@Override
-	private void run(){
+	public void run(){
 		while(running){
 			try{
 				this.sleep((long)(Math.random()*Globals.doormanSleep));
