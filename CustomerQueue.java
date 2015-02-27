@@ -27,9 +27,9 @@ public class CustomerQueue {
 	 */
     public CustomerQueue(int queueLength, Gui gui) {
         this.gui = gui;
-        freeSeats = new ArrayList<Integer>(queueLength);
+        freeSeats = new ArrayList<Integer>();
         for (int i = 0; i < queueLength; i++) {
-            freeSeats.set(i, i);
+            freeSeats.add(i);
         }
         queue = new ArrayList<QueueElement>();
         queueMax = queueLength;
