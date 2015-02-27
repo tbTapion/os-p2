@@ -38,7 +38,7 @@ public class Doorman extends Thread{
 		while(running){
 			try{
 				this.sleep((long)(Math.random()*Globals.doormanSleep));
-			}catch(Exception E){
+			}catch(Exception e){
 				e.printStackTrace();
 			}
 			gui.println("Doorman: Trying to get a new customer...");
