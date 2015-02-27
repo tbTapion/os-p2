@@ -23,6 +23,7 @@ public class Doorman extends Thread{
 	 */
 	public void startThread() {
 		running = true;
+        this.run();
 	}
 
 	/**
@@ -30,18 +31,17 @@ public class Doorman extends Thread{
 	 */
 	public void stopThread() {
 	 	running = false;
-		this.start();
 	}
 
 	// Add more methods as needed
+	@Override
 	public void run(){
 		while(running){
 			try{
 				this.sleep((long)(Math.random()*Globals.doormanSleep));
-			}catch(Exception e){
+			}catch(final InterruptedException e){
 				e.printStackTrace();
 			}
-			gui.println("Doorman: Trying to get a new customer...");
 			queue.addCustomer();
 		}
 	}

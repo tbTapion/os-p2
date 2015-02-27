@@ -41,6 +41,13 @@ public class CustomerQueue {
      */
     public synchronized boolean addCustomer() {
         if (queue.size() >= queueMax) {
+            gui.println("Doorman is waiting for free seats.");
+            try {
+                wait();
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
+            gui.println("Doorman was notified of a free seat.");
             return false;
         }
         final int seatIndex = ThreadLocalRandom.current().nextInt(freeSeats.size());
@@ -50,6 +57,7 @@ public class CustomerQueue {
         queue.add(lastCustomer);
         freeSeats.remove(seatIndex);
         gui.fillLoungeChair(lastCustomer.seat, lastCustomer.customer);
+        notify();
         return true;
     }
 
@@ -60,6 +68,17 @@ public class CustomerQueue {
      */
     public synchronized boolean takeCustomer(final int barber) {
         if (queue.size() <= 0) {
+            if (!(freeSeats.size() > 1)) {
+                gui.println("Barber #" + barber + " is waiting for a customer.");
+            }
+            try {
+                wait();
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (!(freeSeats.size() > 1)) {
+                gui.println("Barber #" + barber + " was notified of a new customer.");
+            }
             return false;
         }
         final QueueElement firstCustomer = queue.get(0);
@@ -67,6 +86,9 @@ public class CustomerQueue {
         freeSeats.add(firstCustomer.seat);
         gui.emptyLoungeChair(firstCustomer.seat);
         gui.fillBarberChair(barber, firstCustomer.customer);
+        if (freeSeats.size() == 1) {
+            notifyAll();
+        }
         return true;
     }
 }
