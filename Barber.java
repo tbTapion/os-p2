@@ -15,18 +15,18 @@ public class Barber extends Thread {
 	 */
 	public Barber(CustomerQueue queue, Gui gui, int pos) { 
 		this.queue = queue;
-        this.gui = gui;
-        this.pos = pos;
+		this.gui = gui;
+		this.pos = pos;
 	}
-
+	
 	/**
 	 * Starts the barber running as a separate thread.
 	 */
 	public void startThread() {
 		running = true;
-        this.run();
+	this.run();
 	}
-
+	
 	/**
 	 * Stops the barber thread.
 	 */
@@ -37,6 +37,23 @@ public class Barber extends Thread {
 	@Override
     public void run() {
         while (running) {
+		try{
+			//Resting time
+			gui.barberIsSleeping(pos);
+			this.sleep((long)(Math.random()*Globals.barberSleep));
+			gui.barberIsAwake(pos);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		//Grabs a customer
+		queue.takeCustomer(pos);
+		try{
+			//Working his magic as a barber
+			this.sleep((long)(Math.random()*Globals.barberWork));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		gui.emptyBarberChair(pos);
         }
     }
 }
