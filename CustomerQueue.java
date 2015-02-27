@@ -5,10 +5,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * This class implements a queue of customers as a circular buffer.
  */
 public class CustomerQueue {
-    private ArrayList<Integer> freeSeats;
-    private ArrayList<QueueElement> queue;
-    private int queueMax;
-    private Gui gui;
+    private final ArrayList<Integer> freeSeats;
+    private final ArrayList<QueueElement> queue;
+    private final int queueMax;
+    private final Gui gui;
 
     class QueueElement {
         protected int seat;

@@ -2,10 +2,9 @@
  * This class implements the doorman's part of the
  * Barbershop thread synchronization example.
  */
-public class Doorman extends Thread{
-
-	private CustomerQueue queue;
-	private Gui gui;
+public class Doorman extends Thread {
+	private final CustomerQueue queue;
+	private final Gui gui;
 	private boolean running;
 
 	/**
@@ -33,7 +32,6 @@ public class Doorman extends Thread{
 	 	running = false;
 	}
 
-	// Add more methods as needed
 	@Override
 	public void run(){
 		while(running){
