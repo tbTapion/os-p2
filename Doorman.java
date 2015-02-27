@@ -30,7 +30,7 @@ public class Doorman extends Thread{
 	 */
 	public void stopThread() {
 	 	running = false;
-		this.run();
+		this.start();
 	}
 
 	// Add more methods as needed
