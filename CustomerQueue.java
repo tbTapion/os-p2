@@ -68,24 +68,20 @@ public class CustomerQueue {
      */
     public synchronized boolean takeCustomer(final int barber) {
         if (queue.size() <= 0) {
-            if (!(freeSeats.size() > 1)) {
-                gui.println("Barber #" + barber + " is waiting for a customer.");
-            }
+            gui.println("Barber #" + barber + " is waiting for a customer.");
             try {
                 wait();
             } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
-            if (!(freeSeats.size() > 1)) {
-                gui.println("Barber #" + barber + " was notified of a new customer.");
-            }
+            gui.println("Barber #" + barber + " was notified of a new customer.");
             return false;
         }
         final QueueElement firstCustomer = queue.get(0);
-        queue.remove(0);
         freeSeats.add(firstCustomer.seat);
         gui.emptyLoungeChair(firstCustomer.seat);
         gui.fillBarberChair(barber, firstCustomer.customer);
+        queue.remove(0);
         if (freeSeats.size() == 1) {
             notifyAll();
         }

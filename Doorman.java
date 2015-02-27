@@ -22,7 +22,7 @@ public class Doorman extends Thread {
 	 */
 	public void startThread() {
 		running = true;
-        this.run();
+        this.start();
 	}
 
 	/**
