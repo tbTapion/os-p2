@@ -1,0 +1,2 @@
+Java mekanismer for Producer/Consumer modellen.
+
