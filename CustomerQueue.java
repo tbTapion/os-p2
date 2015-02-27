@@ -39,7 +39,7 @@ public class CustomerQueue {
      * Add a customer to the queue in a random free seat.
      * @return Success.
      */
-    boolean addCustomer() {
+    public synchronized boolean addCustomer() {
         if (queue.size() >= queueMax) {
             return false;
         }
@@ -58,7 +58,7 @@ public class CustomerQueue {
      * @param barber Specified barber chair.
      * @return Success.
      */
-    boolean takeCustomer(final int barber) {
+    public synchronized boolean takeCustomer(final int barber) {
         if (queue.size() <= 0) {
             return false;
         }
