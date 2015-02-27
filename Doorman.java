@@ -22,14 +22,14 @@ public class Doorman extends Thread{
 	 * Starts the doorman running as a separate thread.
 	 */
 	public void startThread() {
-		boolean = false;
+		running = true;
 	}
 
 	/**
 	 * Stops the doorman thread.
 	 */
 	public void stopThread() {
-		boolean = true;
+	 	running = false;
 		this.run();
 	}
 
