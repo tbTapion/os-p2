@@ -73,6 +73,7 @@ public class Simulator implements Constants
 			// Let the memory unit and the GUI know that time has passed
 			memory.timePassed(timeDifference);
             cpu.timePassed(timeDifference);
+//TODO:            io.timePassed(timeDifference);
 			gui.timePassed(timeDifference);
 			// Deal with the event
 			if (clock < simulationLength) {
@@ -129,14 +130,27 @@ public class Simulator implements Constants
     }
 
     /**
-     * Starts a process in cpu.
+     * Starts the next process in cpu.
      */
     private void startProcess() {
-        Process p = cpu.getNextProcess();
+        Process p = cpu.removeNextProcess();
         cpu.startProcess(p);
         gui.setCpuActive(p);
-        //TODO: Add event for end of this run.
-        //eventQueue.insertEvent(new Event());
+        if (p == null) {
+            return;
+        }
+        if (p.getCpuTimeNeeded() < p.getTimeToNextIoOperation()) {
+            if (p.getCpuTimeNeeded() < cpu.getMaxCpuTime()) {
+                eventQueue.insertEvent(new Event(END_PROCESS, clock + p.getCpuTimeNeeded()));
+                return;
+            }
+        } else {
+            if (p.getTimeToNextIoOperation() < cpu.getMaxCpuTime()) {
+                eventQueue.insertEvent(new Event(IO_REQUEST, clock + p.getTimeToNextIoOperation()));
+                return;
+            }
+        }
+        eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
     }
 
 	/**
@@ -154,13 +168,6 @@ public class Simulator implements Constants
             if (cpu.checkRunning() == null) {
                 startProcess();
             }
-			// Since we haven't implemented the CPU and I/O device yet,
-			// we let the process leave the system immediately, for now.
-			memory.processCompleted(p);
-			// Try to use the freed memory:
-			flushMemoryQueue();
-			// Update statistics
-			p.updateStatistics(statistics);
 
 			// Check for more free memory
 			p = memory.checkMemory(clock);
@@ -172,6 +179,7 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
         cpu.insertProcess(cpu.checkRunning());
+//        cpu.checkRunning().leftCpu(clock);
         startProcess();
 	}
 
@@ -181,6 +189,8 @@ public class Simulator implements Constants
 	private void endProcess() {
 		memory.processCompleted(cpu.checkRunning());
         startProcess();
+        // Update statistics
+        cpu.checkRunning().updateStatistics(statistics);
 	}
 
 	/**

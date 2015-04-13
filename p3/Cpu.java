@@ -57,12 +57,12 @@ public class Cpu {
     }
 
     /**
-     * Gets the next process in line. Returns null if the queue is empty.
+     * Removes the next process in line and returns it. Returns null if the queue is empty.
      * @return The next process in line.
      */
-    public Process getNextProcess() {
+    public Process removeNextProcess() {
         if (cpuQueue.isEmpty()) { return null; }
-        return (Process)cpuQueue.getNext();
+        return (Process)cpuQueue.removeNext();
     }
 
     /**
@@ -74,5 +74,6 @@ public class Cpu {
         if (cpuQueue.getQueueLength() > statistics.cpuQueueLargestLength) {
             statistics.cpuQueueLargestLength = cpuQueue.getQueueLength();
         }
+        //TODO: Statistics on cpu idle/running
     }
 }

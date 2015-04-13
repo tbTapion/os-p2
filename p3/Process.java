@@ -1,5 +1,7 @@
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
 /**
  * This class contains data associated with processes,
@@ -106,6 +108,14 @@ public class Process implements Constants
 		return memoryNeeded;
 	}
 
+    public void leftCpuQueue(long clock) {
+        //TODO: update
+    }
+
+    //TODO: Set and update cpu time needed and time to next io op.
+    public long getCpuTimeNeeded() { return cpuTimeNeeded-timeSpentInCpu; }
+    public long getTimeToNextIoOperation() { return timeToNextIoOperation; }
+
     /**
 	 * Updates the statistics collected by the given Statistic object, adding
 	 * data collected by this process. This method is called when the process
@@ -115,6 +125,7 @@ public class Process implements Constants
 	public void updateStatistics(Statistics statistics) {
 		statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
 		statistics.nofCompletedProcesses++;
+        //TODO: Statistics on waiting for cpu, running in cpu, waiting for I/O and running in I/O
 	}
 
 	// Add more methods as needed
