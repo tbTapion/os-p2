@@ -9,6 +9,10 @@ public class Simulator implements Constants
     private EventQueue eventQueue;
 	/** Reference to the memory unit */
     private Memory memory;
+    /** Reference to the cpu unit */
+    private Cpu cpu;
+    /** Reference to the io unit */
+    private Io io;
 	/** Reference to the GUI interface */
 	private Gui gui;
 	/** Reference to the statistics collector */
@@ -41,6 +45,8 @@ public class Simulator implements Constants
 		statistics = new Statistics();
 		eventQueue = new EventQueue();
 		memory = new Memory(memoryQueue, memorySize, statistics);
+        cpu = new Cpu(cpuQueue, maxCpuTime, statistics);
+        io = new Io(ioQueue, avgIoTime, statistics);
 		clock = 0;
 		// Add code as needed
     }
@@ -66,6 +72,7 @@ public class Simulator implements Constants
 			clock = event.getTime();
 			// Let the memory unit and the GUI know that time has passed
 			memory.timePassed(timeDifference);
+            cpu.timePassed(timeDifference);
 			gui.timePassed(timeDifference);
 			// Deal with the event
 			if (clock < simulationLength) {
@@ -121,6 +128,17 @@ public class Simulator implements Constants
 		statistics.nofCreatedProcesses++;
     }
 
+    /**
+     * Starts a process in cpu.
+     */
+    private void startProcess() {
+        Process p = cpu.getNextProcess();
+        cpu.startProcess(p);
+        gui.setCpuActive(p);
+        //TODO: Add event for end of this run.
+        //eventQueue.insertEvent(new Event());
+    }
+
 	/**
 	 * Transfers processes from the memory queue to the ready queue as long as there is enough
 	 * memory for the processes.
@@ -129,10 +147,13 @@ public class Simulator implements Constants
 		Process p = memory.checkMemory(clock);
 		// As long as there is enough memory, processes are moved from the memory queue to the cpu queue
 		while(p != null) {
-			
-			// TODO: Add this process to the CPU queue!
-			// Also add new events to the event queue if needed
+            // Add this process to the CPU queue.
+            cpu.insertProcess(p);
 
+            // Start process directly if the cpu is idle.
+            if (cpu.checkRunning() == null) {
+                startProcess();
+            }
 			// Since we haven't implemented the CPU and I/O device yet,
 			// we let the process leave the system immediately, for now.
 			memory.processCompleted(p);
@@ -150,14 +171,16 @@ public class Simulator implements Constants
 	 * Simulates a process switch.
 	 */
 	private void switchProcess() {
-		// Incomplete
+        cpu.insertProcess(cpu.checkRunning());
+        startProcess();
 	}
 
 	/**
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
-		// Incomplete
+		memory.processCompleted(cpu.checkRunning());
+        startProcess();
 	}
 
 	/**
