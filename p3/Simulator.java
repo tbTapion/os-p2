@@ -23,7 +23,6 @@ public class Simulator implements Constants
 	private long simulationLength;
 	/** The average length between process arrivals */
 	private long avgArrivalInterval;
-	// Add member variables as needed
 
 	/**
 	 * Constructs a scheduling simulator with the given parameters.
@@ -57,8 +56,6 @@ public class Simulator implements Constants
 	 * GUI is clicked.
 	 */
 	public void simulate() {
-		// TODO: You may want to extend this method somewhat.
-
 		System.out.print("Simulating...");
 		// Genererate the first process arrival event
 		eventQueue.insertEvent(new Event(NEW_PROCESS, 0));
@@ -136,6 +133,7 @@ public class Simulator implements Constants
         Process p = cpu.removeNextProcess();
         cpu.startProcess(p);
         gui.setCpuActive(p);
+        p.leaveCpuQueue(clock);
         if (p == null) {
             return;
         }
@@ -179,7 +177,7 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
         cpu.insertProcess(cpu.checkRunning());
-//        cpu.checkRunning().leftCpu(clock);
+        cpu.checkRunning().leaveCpu(clock);
         startProcess();
 	}
 
@@ -198,7 +196,10 @@ public class Simulator implements Constants
 	 * perform an I/O operation.
 	 */
 	private void processIoRequest() {
+        //cpu.checkRunning.leaveCpu(clock); // Oppdater statistikk
+        //startProcess(); // Start neste cpu prosess
 		// Incomplete
+		// Du kan hente prosessen som skal flyttes vha cpu.checkRunning()
 	}
 
 	/**
@@ -207,6 +208,7 @@ public class Simulator implements Constants
 	 */
 	private void endIoOperation() {
 		// Incomplete
+        // Du kan sette inn prosessen i cpu kø vha cpu.insertProcess(process)
 	}
 
 	/**

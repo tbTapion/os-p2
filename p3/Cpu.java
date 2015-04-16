@@ -74,6 +74,5 @@ public class Cpu {
         if (cpuQueue.getQueueLength() > statistics.cpuQueueLargestLength) {
             statistics.cpuQueueLargestLength = cpuQueue.getQueueLength();
         }
-        //TODO: Statistics on cpu idle/running
     }
 }

@@ -1,5 +1,7 @@
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
 /**
  * This class contains data associated with processes,
@@ -45,9 +47,6 @@ public class Process implements Constants
 
 	/** The global time of the last event involving this process */
 	private long timeOfLastEvent;
-
-	private Random mRandom;
-	private long endTime;
 	
 	/**
 	 * Creates a new process with given parameters. Other parameters are randomly
@@ -56,7 +55,6 @@ public class Process implements Constants
 	 * @param creationTime	The global time when this process is created.
 	 */
 	public Process(long memorySize, long creationTime) {
-		mRandom = new Random();
 		// Memory need varies from 100 kB to 25% of memory size
 		memoryNeeded = 100 + (long)(Math.random()*(memorySize/4-100));
 		// CPU time needed varies from 100 to 10000 milliseconds
@@ -119,130 +117,44 @@ public class Process implements Constants
 	public void updateStatistics(Statistics statistics) {
 		statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
 		statistics.nofCompletedProcesses++;
+        statistics.nofIoProcesses += nofTimesInIoQueue;
 	}
 
 	// Add more methods as needed
-	
-	public synchronized void enterCPUQueue(long clock) {
-		//TEST PRINT
-		System.out.print("Process enters CPU queue at " + clock + "\n");
-	
-		nofTimesInReadyQueue++;
-		timeOfLastEvent = clock;
-		notifyAll();
-	}
-	
-	public synchronized void enterCPU(long clock) {
-		//TEST PRINT
-		System.out.print("Process enters CPU at " + clock + "\n");
-	
-		timeSpentInReadyQueue += clock - timeOfLastEvent;
-		timeOfLastEvent = clock;
-		notifyAll();
-	}
-	
-	public synchronized void leaveCPU(long clock) {
-		timeSpentInCpu += clock - timeOfLastEvent;
-		cpuTimeNeeded -= clock - timeOfLastEvent;
-		timeToNextIoOperation -= clock - timeOfLastEvent;
-		endTime = clock;
-		timeOfLastEvent = clock;
-		notifyAll();
-	}
-	public synchronized void enterIOQueue(long clock) {
-		nofTimesInIoQueue++;
-		timeSpentInReadyQueue += clock - timeOfLastEvent;
-		timeOfLastEvent = clock;
-		notifyAll();
-	}
+    public long getTimeToNextIoOperation() {
+        if (timeToNextIoOperation <= 0) {
+            timeToNextIoOperation = (long) (Math.random() * avgIoInterval / 10.0 + avgIoInterval);
+        }
+        return timeToNextIoOperation;
+    }
 
-	public synchronized void enterIO(long clock) {
+    public long getCpuTimeNeeded() {
+        return cpuTimeNeeded;
+    }
+
+    public void leaveCpu(long clock) {
+        timeSpentInCpu += clock - timeOfLastEvent;
+        cpuTimeNeeded -= clock - timeOfLastEvent;
+        timeToNextIoOperation -= clock - timeOfLastEvent;
+        timeOfLastEvent = clock;
+    }
+
+    public void leaveCpuQueue(long clock) {
+        nofTimesInReadyQueue++;
+        timeSpentInReadyQueue += clock - timeOfLastEvent;
+        timeOfLastEvent = clock;
+    }
+	
+    public void leaveIo(long clock) {
+        timeSpentInIo += clock - timeOfLastEvent;
+        timeToNextIoOperation = getTimeToNextIoOperation();
+        timeOfLastEvent = clock;
+    }
+
+	public void leaveIOQueue(long clock) {
+		nofTimesInIoQueue++;
 		timeSpentWaitingForIo += clock - timeOfLastEvent;
 		timeOfLastEvent = clock;
 		notifyAll();
-	}
-	
-	public synchronized void leaveIO(long clock) {
-		timeSpentInIo += clock - timeOfLastEvent;
-		timeToNextIoOperation = calcTimeToNextIoOperation();
-		timeOfLastEvent = clock;
-		notifyAll();
-	}
-
-	
-	public long calcTimeToNextIoOperation() {
-		long result = timeToNextIoOperation;
-		if (timeToNextIoOperation == 0) result = (long) (mRandom.nextDouble() * avgIoInterval * avgIoInterval * 2.);
-		return result;
-	}
-	
-	// Generated getters and setters
-
-	public long getCpuTimeNeeded() {
-		return cpuTimeNeeded;
-	}
-
-	public void setCpuTimeNeeded(long cpuTimeNeeded) {
-		this.cpuTimeNeeded = cpuTimeNeeded;
-	}
-
-	public long getTimeToNextIoOperation() {
-		return timeToNextIoOperation;
-	}
-
-	public void setTimeToNextIoOperation(long timeToNextIoOperation) {
-		this.timeToNextIoOperation = timeToNextIoOperation;
-	}
-
-	public long getTimeSpentWaitingForMemory() {
-		return timeSpentWaitingForMemory;
-	}
-
-	public void setTimeSpentWaitingForMemory(long timeSpentWaitingForMemory) {
-		this.timeSpentWaitingForMemory = timeSpentWaitingForMemory;
-	}
-
-	public long getTimeSpentInReadyQueue() {
-		return timeSpentInReadyQueue;
-	}
-
-	public void setTimeSpentInReadyQueue(long timeSpentInReadyQueue) {
-		this.timeSpentInReadyQueue = timeSpentInReadyQueue;
-	}
-
-	public long getTimeSpentInCpu() {
-		return timeSpentInCpu;
-	}
-
-	public void setTimeSpentInCpu(long timeSpentInCpu) {
-		this.timeSpentInCpu = timeSpentInCpu;
-	}
-
-	public long getTimeSpentWaitingForIo() {
-		return timeSpentWaitingForIo;
-	}
-
-	public void setTimeSpentWaitingForIo(long timeSpentWaitingForIo) {
-		this.timeSpentWaitingForIo = timeSpentWaitingForIo;
-	}
-
-	public long getTimeSpentInIo() {
-		return timeSpentInIo;
-	}
-
-	public void setTimeSpentInIo(long timeSpentInIo) {
-		this.timeSpentInIo = timeSpentInIo;
-	}
-
-	public long getTimeOfLastEvent() {
-		return timeOfLastEvent;
-	}
-
-	public void setTimeOfLastEvent(long timeOfLastEvent) {
-		this.timeOfLastEvent = timeOfLastEvent;
-	}
-
-	public void setMemoryNeeded(long memoryNeeded) {
-		this.memoryNeeded = memoryNeeded;
 	}
 }
