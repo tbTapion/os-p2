@@ -68,6 +68,5 @@ public class Io {
         if (ioQueue.getQueueLength() > statistics.cpuQueueLargestLength) {
             statistics.cpuQueueLargestLength = ioQueue.getQueueLength();
         }
-        //TODO: Statistics on cpu idle/running
     }
 }
