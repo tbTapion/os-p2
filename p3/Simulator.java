@@ -127,16 +127,16 @@ public class Simulator implements Constants
     }
 
     /**
-     * Starts the next process in cpu.
+     * Starts the next cpu process.
      */
-    private void startProcess() {
+    private void startCpuProcess() {
         Process p = cpu.removeNextProcess();
         cpu.startProcess(p);
         gui.setCpuActive(p);
-        p.leaveCpuQueue(clock);
         if (p == null) {
             return;
         }
+        p.leaveCpuQueue(clock);
         if (p.getCpuTimeNeeded() < p.getTimeToNextIoOperation()) {
             if (p.getCpuTimeNeeded() < cpu.getMaxCpuTime()) {
                 eventQueue.insertEvent(new Event(END_PROCESS, clock + p.getCpuTimeNeeded()));
@@ -149,6 +149,20 @@ public class Simulator implements Constants
             }
         }
         eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
+    }
+
+    /**
+     * Starts the next io process.
+     */
+    private void startIoProcess() {
+        Process p = io.removeNextProcess();
+        io.startProcess(p);
+        gui.setIoActive(p);
+        if (p == null) {
+            return;
+        }
+        p.leaveIOQueue(clock);
+        eventQueue.insertEvent(new Event(END_IO, clock + io.getIoTime()));
     }
 
 	/**
@@ -164,7 +178,7 @@ public class Simulator implements Constants
 
             // Start process directly if the cpu is idle.
             if (cpu.checkRunning() == null) {
-                startProcess();
+                startCpuProcess();
             }
 
 			// Check for more free memory
@@ -178,7 +192,7 @@ public class Simulator implements Constants
 	private void switchProcess() {
         cpu.insertProcess(cpu.checkRunning());
         cpu.checkRunning().leaveCpu(clock);
-        startProcess();
+        startCpuProcess();
 	}
 
 	/**
@@ -186,7 +200,7 @@ public class Simulator implements Constants
 	 */
 	private void endProcess() {
 		memory.processCompleted(cpu.checkRunning());
-        startProcess();
+        startCpuProcess();
         // Update statistics
         cpu.checkRunning().updateStatistics(statistics);
 	}
@@ -196,22 +210,14 @@ public class Simulator implements Constants
 	 * perform an I/O operation.
 	 */
 	private void processIoRequest() {
-        //Needs statisticshere
-
         Process p = cpu.checkRunning(); //Gets the current running process from the cpu
         p.leaveCpu(clock); //Updates process' cpu leave time
-        cpu.startProcess(null); //Sets the current process in the cpu to null
-        if(io.checkRunning() == null){ //Checks if there are any active process' in the io
+        startCpuProcess();//gets a new cpu process from the queue into the cpu
+        io.insertProcess(p);
+        if(io.checkRunning() == null) { //Checks if there are any active process' in the io
             //Sets the active process in IO and GUI and updates process' enter io time
-            io.startProcess(p);
-            gui.setIoActive(p);
-        }else{
-            //Adds the process to the io queue
-            io.insertProcess(p);
+            startIoProcess();
         }
-        //Sets time and new event for the event queue
-        eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIoTime() + (long)(io.getAvgIoTime()*((Math.random()*0.05)-0.025)))); //Not entirely sure what variable to use as a second parameter
-        startProcess();//gets a new cpu process from the queue into the cpu
 	}
 
 	/**
@@ -219,21 +225,12 @@ public class Simulator implements Constants
 	 * is done with its I/O operation.
 	 */
 	private void endIoOperation() {
-        //Needs statistics here
         Process p = io.checkRunning();
-        io.startProcess(null);
         p.leaveIo(clock);
+        startIoProcess();
         cpu.insertProcess(p);
-
         if(cpu.checkRunning() == null){ //Checks if the CPU has any processes running
-            startProcess(); //stats a process if it doesn't
-        }
-
-        p = io.removeNextProcess(); //gets the next process from the io queue
-        if(p != null) {
-            io.startProcess(p); //adds the process to the io
-            //Sets time and new event for the event queue
-            eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIoTime() + (long)(io.getAvgIoTime()*((Math.random()*0.05)-0.025)))); //Not entirely sure what variable to use as a second parameter
+            startCpuProcess(); //stats a process if it doesn't
         }
 	}
 

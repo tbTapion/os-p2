@@ -155,6 +155,5 @@ public class Process implements Constants
         nofTimesInIoQueue++;
         timeSpentWaitingForIo += clock - timeOfLastEvent;
         timeOfLastEvent = clock;
-        notifyAll();
     }
 }
