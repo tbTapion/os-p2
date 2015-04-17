@@ -74,5 +74,10 @@ public class Cpu {
         if (cpuQueue.getQueueLength() > statistics.cpuQueueLargestLength) {
             statistics.cpuQueueLargestLength = cpuQueue.getQueueLength();
         }
+        if (runningProcess != null) {
+            statistics.totalTimeCpuRunning += timePassed;
+        } else {
+            statistics.totalTimeCpuIdle += timePassed;
+        }
     }
 }

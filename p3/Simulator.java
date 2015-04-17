@@ -193,6 +193,7 @@ public class Simulator implements Constants
         cpu.insertProcess(cpu.checkRunning());
         cpu.checkRunning().leaveCpu(clock);
         startCpuProcess();
+        statistics.nofProcessSwitches++;
 	}
 
 	/**
@@ -200,9 +201,9 @@ public class Simulator implements Constants
 	 */
 	private void endProcess() {
 		memory.processCompleted(cpu.checkRunning());
-        startCpuProcess();
         // Update statistics
         cpu.checkRunning().updateStatistics(statistics);
+        startCpuProcess();
 	}
 
 	/**
@@ -227,6 +228,7 @@ public class Simulator implements Constants
 	private void endIoOperation() {
         Process p = io.checkRunning();
         p.leaveIo(clock);
+        statistics.nofIoOperations++;
         startIoProcess();
         cpu.insertProcess(p);
         if(cpu.checkRunning() == null){ //Checks if the CPU has any processes running
