@@ -76,8 +76,8 @@ public class Io {
 
     public void timePassed(long timePassed) {
         statistics.cpuQueueLengthTime += ioQueue.getQueueLength() * timePassed;
-        if (ioQueue.getQueueLength() > statistics.cpuQueueLargestLength) {
-            statistics.cpuQueueLargestLength = ioQueue.getQueueLength();
+        if (ioQueue.getQueueLength() > statistics.ioQueueLargestLength) {
+            statistics.ioQueueLargestLength = ioQueue.getQueueLength();
         }
     }
 }

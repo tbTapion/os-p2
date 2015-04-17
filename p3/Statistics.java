@@ -59,9 +59,9 @@ public class Statistics
         System.out.println("Average throughput (processes per second)                     "+(float)nofCompletedProcesses/simulationLength*1000);
         System.out.println();
         System.out.println("Total CPU time spent processing:                              "+totalTimeCpuRunning+" ms");
-        System.out.println("Fraction of CPU time spent processing:                        "+(float)totalTimeCpuRunning/simulationLength+"%");
+        System.out.println("Fraction of CPU time spent processing:                        "+(float)totalTimeCpuRunning/simulationLength);
         System.out.println("Total CPU time spent waiting:                                 "+totalTimeCpuIdle+" ms");
-        System.out.println("Fraction of CPU time spent waiting:                           "+(float)totalTimeCpuIdle/simulationLength+"%");
+        System.out.println("Fraction of CPU time spent waiting:                           "+(float)totalTimeCpuIdle/simulationLength);
         System.out.println();
         System.out.println("Largest occuring memory queue length:                         "+memoryQueueLargestLength);
         System.out.println("Average memory queue length:                                  "+(float)memoryQueueLengthTime/simulationLength);
