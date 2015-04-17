@@ -23,7 +23,6 @@ public class Simulator implements Constants
 	private long simulationLength;
 	/** The average length between process arrivals */
 	private long avgArrivalInterval;
-	// Add member variables as needed
 
 	/**
 	 * Constructs a scheduling simulator with the given parameters.
@@ -57,8 +56,6 @@ public class Simulator implements Constants
 	 * GUI is clicked.
 	 */
 	public void simulate() {
-		// TODO: You may want to extend this method somewhat.
-
 		System.out.print("Simulating...");
 		// Genererate the first process arrival event
 		eventQueue.insertEvent(new Event(NEW_PROCESS, 0));
@@ -136,6 +133,7 @@ public class Simulator implements Constants
         Process p = cpu.removeNextProcess();
         cpu.startProcess(p);
         gui.setCpuActive(p);
+        p.leaveCpuQueue(clock);
         if (p == null) {
             return;
         }
@@ -179,7 +177,7 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
         cpu.insertProcess(cpu.checkRunning());
-//        cpu.checkRunning().leftCpu(clock);
+        cpu.checkRunning().leaveCpu(clock);
         startProcess();
 	}
 
@@ -201,14 +199,12 @@ public class Simulator implements Constants
         //Needs statisticshere
 
         Process p = cpu.checkRunning(); //Gets the current running process from the cpu
-        p.leaveCPU(clock); //Updates process' cpu leave time
+        p.leaveCpu(clock); //Updates process' cpu leave time
         cpu.startProcess(null); //Sets the current process in the cpu to null
-        p.enterIOQueue(clock); //Updates the process' io enter time
         if(io.checkRunning() == null){ //Checks if there are any active process' in the io
             //Sets the active process in IO and GUI and updates process' enter io time
             io.startProcess(p);
             gui.setIoActive(p);
-            p.enterIO(clock);
         }else{
             //Adds the process to the io queue
             io.insertProcess(p);
@@ -226,9 +222,8 @@ public class Simulator implements Constants
         //Needs statistics here
         Process p = io.checkRunning();
         io.startProcess(null);
-        p.leaveIO(clock);
+        p.leaveIo(clock);
         cpu.insertProcess(p);
-        p.enterCPUQueue(clock);
 
         if(cpu.checkRunning() == null){ //Checks if the CPU has any processes running
             startProcess(); //stats a process if it doesn't
@@ -237,7 +232,6 @@ public class Simulator implements Constants
         p = io.removeNextProcess(); //gets the next process from the io queue
         if(p != null) {
             io.startProcess(p); //adds the process to the io
-            p.enterIO(clock); // updates the process' enter io time
             //Sets time and new event for the event queue
             eventQueue.insertEvent(new Event(END_IO, clock + (long)(io.getAvgIoTime()*((Math.random()*0.05)-0.25)))); //Not entirely sure what variable to use as a second parameter
         }

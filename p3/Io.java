@@ -3,20 +3,29 @@
  * the IO device of the simulated system.
  */
 public class Io {
-    /** The queue of processes waiting for IO access */
+    /**
+     * The queue of processes waiting for IO access
+     */
     private Queue ioQueue;
-    /** A reference to the statistics collector */
+    /**
+     * A reference to the statistics collector
+     */
     private Statistics statistics;
-    /** The maximum time quant used by the RR algorithm */
+    /**
+     * The maximum time quant used by the RR algorithm
+     */
     private long avgIoTime;
-    /** Current process running*/
+    /**
+     * Current process running
+     */
     private Process currentProcess;
 
     /**
      * Creates a new cpu device with the given parameters.
-     * @param ioQueue	The memory queue to be used.
-     * @param avgIoTime	The amount of memory in the memory device.
-     * @param statistics	A reference to the statistics collector.
+     *
+     * @param ioQueue    The memory queue to be used.
+     * @param avgIoTime  The amount of memory in the memory device.
+     * @param statistics A reference to the statistics collector.
      */
     public Io(Queue ioQueue, long avgIoTime, Statistics statistics) {
         this.ioQueue = ioQueue;
@@ -25,52 +34,58 @@ public class Io {
         this.currentProcess = null;
     }
 
-    /** Return the maximum time quant used by the RR algorithm
+    /**
+     * Return the maximum time quant used by the RR algorithm
+     *
      * @return avIoTime - long
      */
     public long getAvgIoTime() {
         return avgIoTime;
     }
 
-    /** Adds a process to the IO queue to be used by the RR algorithm
+    /**
+     * Adds a process to the IO queue to be used by the RR algorithm
+     *
      * @param p - Process
      */
-    public void insertProcess(Process p){
+    public void insertProcess(Process p) {
         ioQueue.insert(p);
     }
 
-    /** Sets a process as the current process used by the IO
+    /**
+     * Sets a process as the current process used by the IO
+     *
      * @param p - Process
      */
     public void startProcess(Process p) {
         currentProcess = p;
     }
 
-    /** Gets the current process in the IO
+    /**
+     * Gets the current process in the IO
+     *
      * @return Process
      */
     public Process checkRunning() {
         return currentProcess;
     }
 
-    /** Gets a process and removes it from the IO queue. If no process in queue, returns null
+    /**
+     * Gets a process and removes it from the IO queue. If no process in queue, returns null
+     *
      * @return Process
      */
     public Process removeNextProcess() {
-        if (ioQueue.isEmpty()){
+        if (ioQueue.isEmpty()) {
             return null;
         }
-        return (Process)ioQueue.removeNext();
+        return (Process) ioQueue.removeNext();
     }
 
     public void timePassed(long timePassed) {
-        statistics.cpuQueueLengthTime += ioQueue.getQueueLength()*timePassed;
+        statistics.cpuQueueLengthTime += ioQueue.getQueueLength() * timePassed;
         if (ioQueue.getQueueLength() > statistics.cpuQueueLargestLength) {
             statistics.cpuQueueLargestLength = ioQueue.getQueueLength();
         }
     }
-
-
-
-
 }
