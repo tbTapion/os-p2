@@ -210,7 +210,7 @@ public class Simulator implements Constants
             io.insertProcess(p);
         }
         //Sets time and new event for the event queue
-        eventQueue.insertEvent(new Event(END_IO, clock + (long)(io.getAvgIoTime()*((Math.random()*0.05)-0.25)))); //Not entirely sure what variable to use as a second parameter
+        eventQueue.insertEvent(new Event(END_IO, clock + (long)(io.getAvgIoTime()*((Math.random()*0.05)-0.025)))); //Not entirely sure what variable to use as a second parameter
         startProcess();//gets a new cpu process from the queue into the cpu
 	}
 
@@ -233,7 +233,7 @@ public class Simulator implements Constants
         if(p != null) {
             io.startProcess(p); //adds the process to the io
             //Sets time and new event for the event queue
-            eventQueue.insertEvent(new Event(END_IO, clock + (long)(io.getAvgIoTime()*((Math.random()*0.05)-0.25)))); //Not entirely sure what variable to use as a second parameter
+            eventQueue.insertEvent(new Event(END_IO, clock + (long)(io.getAvgIoTime()*((Math.random()*0.05)-0.025)))); //Not entirely sure what variable to use as a second parameter
         }
 	}
 
